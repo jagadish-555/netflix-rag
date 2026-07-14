@@ -1,0 +1,11 @@
+federation_version: =2.0.0
+subgraphs:
+  content:
+    routing_url: http://host.docker.internal:8001/graphql
+    schema:
+      file: ./subgraphs/content.graphql
+  finance:
+    routing_url: http://host.docker.internal:8002/graphql
+    schema:
+      file: ./subgraphs/finance.graphql
+

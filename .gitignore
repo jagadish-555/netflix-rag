@@ -1,0 +1,22 @@
+# Local environment and secrets
+.env
+.venv/
+
+# Python bytecode and caches
+__pycache__/
+*.py[cod]
+*.pyo
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# OS files
+.DS_Store
+
+# Generated data stores
+chroma_db/
+subgraphs/content.db
+subgraphs/finance.db
+
+# Optional local outputs
+*.log

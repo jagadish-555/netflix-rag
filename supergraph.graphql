@@ -1,0 +1,64 @@
+schema
+  @link(url: "https://specs.apollo.dev/link/v1.0")
+  @link(url: "https://specs.apollo.dev/join/v0.2", for: EXECUTION)
+{
+  query: Query
+}
+
+directive @join__field(graph: join__Graph!, requires: join__FieldSet, provides: join__FieldSet, type: String, external: Boolean, override: String, usedOverridden: Boolean) repeatable on FIELD_DEFINITION | INPUT_FIELD_DEFINITION
+
+directive @join__graph(name: String!, url: String!) on ENUM_VALUE
+
+directive @join__implements(graph: join__Graph!, interface: String!) repeatable on OBJECT | INTERFACE
+
+directive @join__type(graph: join__Graph!, key: join__FieldSet, extension: Boolean! = false, resolvable: Boolean! = true) repeatable on OBJECT | INTERFACE | UNION | ENUM | INPUT_OBJECT | SCALAR
+
+directive @link(url: String, as: String, for: link__Purpose, import: [link__Import]) repeatable on SCHEMA
+
+"""A 64-bit or larger integer serialized as a string"""
+scalar BigInt
+  @join__type(graph: FINANCE)
+
+scalar join__FieldSet
+
+enum join__Graph {
+  CONTENT @join__graph(name: "content", url: "http://host.docker.internal:8001/graphql")
+  FINANCE @join__graph(name: "finance", url: "http://host.docker.internal:8002/graphql")
+}
+
+scalar link__Import
+
+enum link__Purpose {
+  """
+  `SECURITY` features provide metadata necessary to securely resolve fields.
+  """
+  SECURITY
+
+  """
+  `EXECUTION` features provide metadata necessary for operation execution.
+  """
+  EXECUTION
+}
+
+type Movie
+  @join__type(graph: CONTENT, key: "id")
+  @join__type(graph: FINANCE, key: "id")
+{
+  id: Int!
+  title: String @join__field(graph: CONTENT)
+  releaseDate: String @join__field(graph: CONTENT)
+  releaseYear: Int @join__field(graph: CONTENT)
+  genre: String @join__field(graph: CONTENT)
+  runtime: Int @join__field(graph: CONTENT)
+  overview: String @join__field(graph: CONTENT)
+  budget: BigInt @join__field(graph: FINANCE)
+  revenue: BigInt @join__field(graph: FINANCE)
+}
+
+type Query
+  @join__type(graph: CONTENT)
+  @join__type(graph: FINANCE)
+{
+  movieContent(id: Int!): Movie @join__field(graph: CONTENT)
+  movieFinance(id: Int!): Movie @join__field(graph: FINANCE)
+}

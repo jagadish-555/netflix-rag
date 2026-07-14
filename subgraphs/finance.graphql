@@ -1,0 +1,26 @@
+schema @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@key"]) {
+  query: Query
+}
+
+"""A 64-bit or larger integer serialized as a string"""
+scalar BigInt
+
+type Movie @key(fields: "id") {
+  id: Int!
+  budget: BigInt
+  revenue: BigInt
+}
+
+type Query {
+  _entities(representations: [_Any!]!): [_Entity]!
+  _service: _Service!
+  movieFinance(id: Int!): Movie
+}
+
+scalar _Any
+
+union _Entity = Movie
+
+type _Service {
+  sdl: String!
+}
