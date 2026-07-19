@@ -60,13 +60,19 @@ def build(csv_path: str,
     df["budget"] = df["budget"].fillna(0).astype(int)
     df["revenue"] = df["revenue"].fillna(0).astype(int)
 
+    # 5. Pre-compute contextualized overview for RAG
+    df["contextualized_overview"] = df.apply(
+        lambda row: f"{row['title']} ({row['release_year']}) - Genres: {row['genre']}.\n{row['overview']}",
+        axis=1
+    )
+
 
     # ==========================================
     # SILO 1: CONTENT DEPARTMENT
     # ==========================================
     print(f"Building Content Silo ({content_db})...")
     with sqlite3.connect(content_db) as conn:
-        content_df = df[["id", "title", "release_date", "release_year", "genre", "runtime", "overview"]]
+        content_df = df[["id", "title", "release_date", "release_year", "genre", "runtime", "overview", "contextualized_overview"]]
         content_df.to_sql("movies", conn, if_exists="replace", index=False)
         conn.execute("CREATE INDEX IF NOT EXISTS idx_content_id ON movies(id)")
 
